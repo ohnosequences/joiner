@@ -4,7 +4,18 @@ description   := "joiner project"
 
 bucketSuffix  := "era7.com"
 
-// libraryDependencies ++= Seq()
+libraryDependencies ++= Seq(
+  "ohnosequences" %% "fastarious" % "0.11.0"
+)
+// shows time for each test:
+testOptions in Test += Tests.Argument("-oD")
+// disables parallel exec
+parallelExecution in Test := false
+
+
+// NOTE should be reestablished
+wartremoverErrors in (Test, compile) := Seq()
+wartremoverErrors in (Compile, compile) := Seq()
 
 
 // // For resolving dependency versions conflicts:
