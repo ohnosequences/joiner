@@ -70,12 +70,11 @@ case object DNADistributions {
 
     def consensus(len: Int): Array[DNAD] = {
 
-      val cons = Array.fill[DNAD](len)(uniform)
+      def read(i: Int) = dsds(i)
 
+      val cons = Array.fill[DNAD](len)(uniform)
       var i   = 0 // read
       var pos = 0 // position
-
-      def read(i: Int) = dsds(i)
 
       // iter reads
       while(pos < len) {
