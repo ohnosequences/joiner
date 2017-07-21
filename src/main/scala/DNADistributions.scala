@@ -68,6 +68,7 @@ case object DNADistributions {
 
   implicit class ConsensusOps(val dsds: Array[Array[DNAD]]) extends AnyVal {
 
+    // compute the join of distributions at each column
     def consensus(len: Int): Array[DNAD] = {
 
       def read(i: Int) = dsds(i)
