@@ -114,16 +114,23 @@ case object DNADistributions {
     // ds.foldLeft(uniform)(join)
 
     def ee: Double = {
-
       var sum = 0D
       var i = 0
-
       while(i < ds.length) {
         sum = ds(i).errorProb + sum
         i = i + 1
       }
-
       sum
+    }
+
+    def toSequenceQuality: SequenceQuality = {
+
+      val seq =
+        Sequence( String.valueOf(ds.map(_.mostLikely)) )
+      val scores =
+        Quality( ds.map(d => ((-10) * Math.log10(d.errorProb)).intValue).toSeq )
+
+      SequenceQuality(seq, scores)
     }
   }
 }

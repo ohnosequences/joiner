@@ -34,6 +34,11 @@ class JoinerTest extends FunSuite {
     // assert(d1.errorProb == 0.20)
   }
 
+  ignore("DNADs to SequenceQuality") {
+
+    dnads foreach { ds => println(ds.toSequenceQuality) }
+  }
+
   ignore("DNADs from fastq file -- ee") {
 
     dnads foreach { ds => val ee = ds.ee }
