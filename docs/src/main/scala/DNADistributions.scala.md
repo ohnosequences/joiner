@@ -34,6 +34,9 @@ case object DNADistributions {
   val uniform: DNAD =
     DNAD(A = 0.25, T = 0.25, C = 0.25, G = 0.25)
 
+  val fromSequenceQuality: SequenceQuality => Array[DNAD] =
+    { x: SequenceQuality => x.pSymbols } andThen pSymbolsToDNADs
+
   val fromPSymbol: PSymbol => DNAD =
     {
       case PSymbol('A', err) => DNAD(A = 1 - err, T = err/3, C = err/3, G = err/3)
@@ -43,7 +46,7 @@ case object DNADistributions {
       case _                 => uniform
     }
 
-  val pSymbolsToDNADs: Seq[PSymbol] => Array[DNAD] =
+  lazy val pSymbolsToDNADs: Seq[PSymbol] => DNASeq =
     qss => {
 
       val ds: Array[DNAD] = Array.fill(qss.length)(null)
@@ -68,7 +71,7 @@ case object DNADistributions {
       G = (d1.G * d2.G) / deltaProb(d1,d2)
     )
 
-  implicit class ConsensusOps(val dsds: Array[Array[DNAD]]) extends AnyVal {
+  implicit class ConsensusOps(val dsds: Array[DNASeq]) extends AnyVal {
 
     // compute the join of distributions at each column
     def consensus(len: Int): Array[DNAD] = {
@@ -96,7 +99,7 @@ case object DNADistributions {
     }
   }
 
-  implicit class DNADOps(val ds: Array[DNAD]) extends AnyVal {
+  implicit class DNADOps(val ds: DNASeq) extends AnyVal {
 
     def show: String =
       ds.foldLeft(""){ (acc, d) => acc ++ s"${d.mostLikely}:${d.errorProb}|" }
@@ -140,6 +143,11 @@ case object DNADistributions {
 
 
 
+[test/scala/BestOverlap.scala]: ../../test/scala/BestOverlap.scala.md
+[test/scala/Intervals.scala]: ../../test/scala/Intervals.scala.md
 [test/scala/Joiner.scala]: ../../test/scala/Joiner.scala.md
 [main/scala/DNADistributions.scala]: DNADistributions.scala.md
-[main/scala/Joiner.scala]: Joiner.scala.md
+[main/scala/package.scala]: package.scala.md
+[main/scala/intervals.scala]: intervals.scala.md
+[main/scala/io.scala]: io.scala.md
+[main/scala/bestOverlap.scala]: bestOverlap.scala.md
