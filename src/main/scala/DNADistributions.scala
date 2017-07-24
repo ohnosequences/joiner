@@ -112,7 +112,6 @@ case object DNADistributions {
 
       res
     }
-    // ds.foldLeft(uniform)(join)
 
     def ee: Double = {
       var sum = 0D
