@@ -42,14 +42,21 @@ case object bestOverlap {
       val consensusErr =
         xs1_before.ee + joinShared.ee + xs2_after.ee
 
-      val _consensusScore = (baseErr - 2*consensusErr) / (baseErr + 2*consensusErr)
+      def precise(d: Double): BigDecimal =
+        BigDecimal valueOf d
+
+      val _consensusScore =
+        if(baseErr == 0 && consensusErr == 0)
+          precise(1) // TODO is this reasonable?
+        else
+        (precise(baseErr) - 2*precise(consensusErr)) / (precise(baseErr) + 2*precise(consensusErr))
 
       if(_consensusScore > consensusScore) {
-        consensusScore  = _consensusScore
+        consensusScore  = _consensusScore.toDouble
         consensus       = xs1_before ++ joinShared ++ xs2_after
         bov             = ovs(i)
       }
-      
+
       i = i + 1
     }
 
