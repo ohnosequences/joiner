@@ -113,6 +113,19 @@ case object DNADistributions {
       res
     }
 
+    def uniformOver(threshold: ErrorP): DNASeq = {
+
+      val res = Array.fill[DNAD](ds.length)(uniform)
+      var i = 0
+      while(i < ds.length) {
+        if(ds(i).errorProb <= threshold) { res.update(i, ds(i)) }
+        i = i+1
+      }
+
+      res
+    }
+
+
     def ee: Double = {
       var sum = 0D
       var i = 0
