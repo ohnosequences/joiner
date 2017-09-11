@@ -22,13 +22,7 @@ class JoinerTest extends FunSuite {
       .map(_.sequence.pSymbols)
 
   def dnads =
-    pSymbols map pSymbolsToDNADs
-
-  def dnadsAlt =
-    lines(in).parseFromFASTQ
-
-  def dnadsAlt2 =
-    lines(in).parseFromFASTQReuseArray(250)
+    pSymbols map pSymbolsToDNASeq
 
   test("DNA distributions") {
 
@@ -49,17 +43,6 @@ class JoinerTest extends FunSuite {
     dnads foreach { ds => val z = ds.head.mostLikely }
   }
 
-  ignore("DNADs from fastq file again -- ee") {
-
-    dnadsAlt foreach { ds => val z = ds.head.mostLikely }
-  }
-
-  ignore("DNADs from fastq file again 2 -- ee") {
-
-    dnadsAlt2 foreach { ds => val z = ds.head.mostLikely }
-  }
-
-
   ignore("DNADs from fastq file -- joinAll") {
 
     dnads.grouped(1000) foreach { dsds =>
@@ -72,6 +55,22 @@ class JoinerTest extends FunSuite {
 
       println(c.show)
     }
+  }
+
+  test("consensus order") {
+
+    val less = 100
+    val more = 300
+
+    val AT = Seq(QSymbol('A', 10), QSymbol('T', 10))
+    val TT = Seq(QSymbol('T', 10), QSymbol('T', 10))
+
+    val ds1 = Array.fill(less)(AT) ++ Array.fill(more)(TT)
+    val ds2 = Array.fill(more)(TT) ++ Array.fill(less)(AT)
+
+    println(s"These two sequences should be equal: ")
+    println(consensus.of(ds1)(2).show)
+    println(consensus.of(ds2)(2).show)
   }
 
   test("simple consensus computation") {

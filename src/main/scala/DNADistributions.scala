@@ -20,7 +20,7 @@ case object DNADistributions {
         case 'N' => 1
       }
 
-    private[this] val sortedBases: Array[Char] =
+    val sortedBases: Array[Char] =
       Array[Char]('A','T','C','G').sortBy(1 - this(_))
 
     def mostLikely: Char =
@@ -32,10 +32,11 @@ case object DNADistributions {
   val uniform: DNAD =
     DNAD(A = 0.25, T = 0.25, C = 0.25, G = 0.25)
 
-  val fromSequenceQuality: SequenceQuality => Array[DNAD] =
-    { x: SequenceQuality => x.pSymbols } andThen pSymbolsToDNADs
 
-  val fromPSymbol: PSymbol => DNAD =
+  // conversions
+  /////////////////////////////////////////////////////////////////////////////
+
+  val pSymbolToDNAD: PSymbol => DNAD =
     {
       case PSymbol('A', err) => DNAD(A = 1 - err, T = err/3, C = err/3, G = err/3)
       case PSymbol('T', err) => DNAD(T = 1 - err, A = err/3, C = err/3, G = err/3)
@@ -44,14 +45,21 @@ case object DNADistributions {
       case _                 => uniform
     }
 
-  lazy val pSymbolsToDNADs: Seq[PSymbol] => DNASeq =
+  val DNADtoPSymbol: DNAD => PSymbol =
+    d => PSymbol(d.mostLikely, d.errorProb)
+
+  val sequenceQualityToDNASeq: SequenceQuality => DNASeq =
+    { x: SequenceQuality => x.pSymbols } andThen pSymbolsToDNASeq
+
+
+  lazy val pSymbolsToDNASeq: Seq[PSymbol] => DNASeq =
     qss => {
 
       val ds: Array[DNAD] = Array.fill(qss.length)(null)
 
       var i = 0
       while(i < ds.length) {
-        ds.update(i, fromPSymbol(qss(i)))
+        ds.update(i, pSymbolToDNAD(qss(i)))
         i = i + 1
       }
 
@@ -100,7 +108,7 @@ case object DNADistributions {
   implicit class DNADOps(val ds: DNASeq) extends AnyVal {
 
     def show: String =
-      ds.foldLeft(""){ (acc, d) => acc ++ s"${d.mostLikely}:${d.errorProb}|" }
+      ds.foldLeft(""){ (acc, d) => acc ++ s"${d.mostLikely}:${d.errorProb.toString}|" }
 
     def joinAll: DNAD = {
 
@@ -124,7 +132,6 @@ case object DNADistributions {
 
       res
     }
-
 
     def ee: Double = {
       var sum = 0D
