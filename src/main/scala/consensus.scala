@@ -3,32 +3,39 @@ package ohnosequences.joiner
 import ohnosequences.fastarious._
 import DNADistributions._
 
+/**
+ * Namespace wrapping functions related with consensus.
+ *
+ * The input of the consensus computation is an array of fastarious.QSymbols.
+ * Then
+ *    1. at each position group by letter and join them independently
+ *    2. join the resulting 4 DNADs
+ */
 case object consensus {
 
-  /*
-
-    The input is an array of QSymbols. Then
-
-    1. at each position group by letter and join them independently
-    2. join the resulting 4 DNADs
-  */
-
+  /** The maximum Phred quality score */
   lazy val maxQScore: Int =
     3000
 
+  /** The minimum error with Phred quality scores */
   lazy val minErr: Double =
     QSymbol('A', maxQScore).toPSymbol.errorP
 
+  /** Joint Phred quality score within the same position and the same base */
   def jointScoreSameBase(qscore1: Int, qscore2: Int): Int =
     Math.min(
       errorProbToScore(
-        errSameBasePSymbols( scoreToErrorProb(qscore1), scoreToErrorProb(qscore2) )
+        errSameBasePSymbols(
+          scoreToErrorProb(qscore1),
+          scoreToErrorProb(qscore2)
+        )
       ),
       maxQScore
     )
 
-  // compute the join of qsymbols directly
-  // elements of this array corresponds to sequences
+  /**
+   * Compute the joint distribution of an array of sequences, position-wise.
+   */
   def of(seqs: Array[Seq[QSymbol]])(len: Int): Array[DNAD] = {
 
     // uniform by default
@@ -78,6 +85,7 @@ case object consensus {
     cons
   }
 
+  /** Joint error probability within the same position and the same base */
   def errSameBasePSymbols(err1: Double, err2: Double) = {
 
     val p1 = 1 - err1
@@ -92,8 +100,7 @@ case object consensus {
     )
   }
 
-
-
+  /** Joint error of a sequence of errors */
   def jointError(errs: Array[Double]): Double =
     errs.foldLeft(0.75D)(errSameBasePSymbols)
 }
