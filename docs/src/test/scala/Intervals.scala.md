@@ -37,11 +37,13 @@ class Intervals extends FunSuite {
 
 
 
-[test/scala/BestOverlap.scala]: BestOverlap.scala.md
-[test/scala/Intervals.scala]: Intervals.scala.md
-[test/scala/Joiner.scala]: Joiner.scala.md
-[main/scala/DNADistributions.scala]: ../../main/scala/DNADistributions.scala.md
-[main/scala/package.scala]: ../../main/scala/package.scala.md
 [main/scala/intervals.scala]: ../../main/scala/intervals.scala.md
-[main/scala/io.scala]: ../../main/scala/io.scala.md
+[main/scala/package.scala]: ../../main/scala/package.scala.md
 [main/scala/bestOverlap.scala]: ../../main/scala/bestOverlap.scala.md
+[main/scala/DNADistributions.scala]: ../../main/scala/DNADistributions.scala.md
+[main/scala/consensus.scala]: ../../main/scala/consensus.scala.md
+[test/scala/Intervals.scala]: Intervals.scala.md
+[test/scala/BestOverlap.scala]: BestOverlap.scala.md
+[test/scala/Joining.scala]: Joining.scala.md
+[test/scala/Joiner.scala]: Joiner.scala.md
+[test/scala/Consensus.scala]: Consensus.scala.md

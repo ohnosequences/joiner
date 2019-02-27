@@ -7,17 +7,31 @@ import reflect.ClassTag
 import DNADistributions._
 import intervals._
 
+/**
+ * Namepace wrapping functions to compute the best overlap between two DNA
+ * distribution sequences
+ */
 case object bestOverlap {
 
+  /** Build an interval [0, l[, where l is the length of an array */
   def whole[X](seq: Array[X]): Interval =
     interval(0, seq.length)
 
+  /** Get an array slice, defined by the specified interval */
   def extractFrom[X:ClassTag](xs: Array[X])(i: Interval): Array[X] =
     i match {
       case Empty            => Array.empty[X]
       case LCRO(start,end)  => xs.slice(i.start, i.end)
     }
 
+  /**
+   * Compute the best overlap between two sequences of [[DNAD]]s
+   *
+   * @param xs1 is the first sequence
+   * @param xs2 is the second sequence
+   *
+   * @return the best overlapped sequence and its probability
+   */
   def between(xs1: Array[DNAD], xs2: Array[DNAD]): (Array[DNAD], Double) = {
 
     val ovs: Array[(Interval,Interval,Interval,Interval)] =
@@ -34,7 +48,10 @@ case object bestOverlap {
     while(i < ovs.length) {
 
       val (xs1_before, xs1_shared, xs2_shared, xs2_after) =
-        (extractFrom(xs1)(ovs(i)._1), extractFrom(xs1)(ovs(i)._2), extractFrom(xs2)(ovs(i)._3), extractFrom(xs2)(ovs(i)._4))
+        (
+          extractFrom(xs1)(ovs(i)._1), extractFrom(xs1)(ovs(i)._2),
+          extractFrom(xs2)(ovs(i)._3), extractFrom(xs2)(ovs(i)._4)
+        )
 
       val joinShared =
         Array(xs1_shared, xs2_shared).consensus(xs1_shared.length)
@@ -42,14 +59,18 @@ case object bestOverlap {
       val consensusErr =
         xs1_before.ee + joinShared.ee + xs2_after.ee
 
-      val _consensusScore = (baseErr - 2*consensusErr) / (baseErr + 2*consensusErr)
+      val _consensusScore =
+        if(baseErr == 0 && consensusErr == 0)
+          1
+        else
+          (baseErr - 2*consensusErr) / (baseErr + 2*consensusErr)
 
       if(_consensusScore > consensusScore) {
         consensusScore  = _consensusScore
         consensus       = xs1_before ++ joinShared ++ xs2_after
         bov             = ovs(i)
       }
-      
+
       i = i + 1
     }
 
@@ -62,11 +83,13 @@ case object bestOverlap {
 
 
 
-[test/scala/BestOverlap.scala]: ../../test/scala/BestOverlap.scala.md
-[test/scala/Intervals.scala]: ../../test/scala/Intervals.scala.md
-[test/scala/Joiner.scala]: ../../test/scala/Joiner.scala.md
-[main/scala/DNADistributions.scala]: DNADistributions.scala.md
-[main/scala/package.scala]: package.scala.md
 [main/scala/intervals.scala]: intervals.scala.md
-[main/scala/io.scala]: io.scala.md
+[main/scala/package.scala]: package.scala.md
 [main/scala/bestOverlap.scala]: bestOverlap.scala.md
+[main/scala/DNADistributions.scala]: DNADistributions.scala.md
+[main/scala/consensus.scala]: consensus.scala.md
+[test/scala/Intervals.scala]: ../../test/scala/Intervals.scala.md
+[test/scala/BestOverlap.scala]: ../../test/scala/BestOverlap.scala.md
+[test/scala/Joining.scala]: ../../test/scala/Joining.scala.md
+[test/scala/Joiner.scala]: ../../test/scala/Joiner.scala.md
+[test/scala/Consensus.scala]: ../../test/scala/Consensus.scala.md

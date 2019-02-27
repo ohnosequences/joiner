@@ -24,13 +24,7 @@ class JoinerTest extends FunSuite {
       .map(_.sequence.pSymbols)
 
   def dnads =
-    pSymbols map pSymbolsToDNADs
-
-  def dnadsAlt =
-    lines(in).parseFromFASTQ
-
-  def dnadsAlt2 =
-    lines(in).parseFromFASTQReuseArray(250)
+    pSymbols map pSymbolsToDNASeq
 
   test("DNA distributions") {
 
@@ -51,17 +45,6 @@ class JoinerTest extends FunSuite {
     dnads foreach { ds => val z = ds.head.mostLikely }
   }
 
-  ignore("DNADs from fastq file again -- ee") {
-
-    dnadsAlt foreach { ds => val z = ds.head.mostLikely }
-  }
-
-  ignore("DNADs from fastq file again 2 -- ee") {
-
-    dnadsAlt2 foreach { ds => val z = ds.head.mostLikely }
-  }
-
-
   ignore("DNADs from fastq file -- joinAll") {
 
     dnads.grouped(1000) foreach { dsds =>
@@ -74,6 +57,22 @@ class JoinerTest extends FunSuite {
 
       println(c.show)
     }
+  }
+
+  test("consensus order") {
+
+    val less = 100
+    val more = 300
+
+    val AT = Seq(QSymbol('A', 10), QSymbol('T', 10))
+    val TT = Seq(QSymbol('T', 10), QSymbol('T', 10))
+
+    val ds1 = Array.fill(less)(AT) ++ Array.fill(more)(TT)
+    val ds2 = Array.fill(more)(TT) ++ Array.fill(less)(AT)
+
+    println(s"These two sequences should be equal: ")
+    println(consensus.of(ds1)(2).show)
+    println(consensus.of(ds2)(2).show)
   }
 
   test("simple consensus computation") {
@@ -99,11 +98,13 @@ class JoinerTest extends FunSuite {
 
 
 
-[test/scala/BestOverlap.scala]: BestOverlap.scala.md
-[test/scala/Intervals.scala]: Intervals.scala.md
-[test/scala/Joiner.scala]: Joiner.scala.md
-[main/scala/DNADistributions.scala]: ../../main/scala/DNADistributions.scala.md
-[main/scala/package.scala]: ../../main/scala/package.scala.md
 [main/scala/intervals.scala]: ../../main/scala/intervals.scala.md
-[main/scala/io.scala]: ../../main/scala/io.scala.md
+[main/scala/package.scala]: ../../main/scala/package.scala.md
 [main/scala/bestOverlap.scala]: ../../main/scala/bestOverlap.scala.md
+[main/scala/DNADistributions.scala]: ../../main/scala/DNADistributions.scala.md
+[main/scala/consensus.scala]: ../../main/scala/consensus.scala.md
+[test/scala/Intervals.scala]: Intervals.scala.md
+[test/scala/BestOverlap.scala]: BestOverlap.scala.md
+[test/scala/Joining.scala]: Joining.scala.md
+[test/scala/Joiner.scala]: Joiner.scala.md
+[test/scala/Consensus.scala]: Consensus.scala.md
