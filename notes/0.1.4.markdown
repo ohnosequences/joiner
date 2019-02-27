@@ -1,0 +1,2 @@
+- implement consensus computation
+- document the whole code base
